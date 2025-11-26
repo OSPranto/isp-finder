@@ -60,17 +60,16 @@
             margin-bottom: 25px;
         }
 
-        /* ⭐ ISP তথ্য ডিসপ্লে স্টাইল (পরিবর্তিত) ⭐ */
+        /* ISP তথ্য ডিসপ্লে স্টাইল */
         .isp-info {
             margin-bottom: 25px;
             padding: 10px 0;
             font-size: 0.9em;
             color: #8b949e;
-            border-bottom: 1px dashed #30363d; /* স্পিড সেকশন থেকে আলাদা করার জন্য */
+            border-bottom: 1px dashed #30363d;
             text-align: left;
         }
         
-        /* ISP নাম এবং IP অ্যাড্রেস হাইলাইট */
         .isp-info strong {
             color: #c9d1d9;
             display: block;
@@ -78,7 +77,7 @@
             font-weight: 600;
         }
         
-        /* ⭐ স্পিড মিটার ডিসপ্লে স্টাইল ⭐ */
+        /* স্পিড মিটার ডিসপ্লে স্টাইল */
         .result-area {
             margin: 30px 0;
             padding: 20px;
@@ -129,9 +128,8 @@
             border-top: 1px dashed #30363d;
         }
         
-        /* বাটনের স্টাইল ও ত্রুটি রং */
+        /* বাটনের স্টাইল */
         #start-button {
-            /* ... (Buttons styles remain the same) ... */
             background-color: #238636;
             color: white;
             border: none;
@@ -198,11 +196,12 @@
         <p class="subtitle">Powered by **OSPranto Tech**</p>
         
         <div class="isp-info">
-            <p style="margin-bottom: 5px;">🌐 IP অ্যাড্রেস: <strong id="ip-address">--</strong></p>
+            <p style="margin-bottom: 5px;">🌐 IP অ্যাড্রেস: <strong id="ip-address">...</strong></p>
             আপনার ISP: 
             <strong id="isp-name">তথ্য লোড হচ্ছে...</strong>
-            <p style="margin-top: 5px;">অবস্থান: <strong id="location">--</strong></p>
+            <p style="margin-top: 5px;">অবস্থান: <strong id="location">...</strong></p>
         </div>
+
         <div class="result-area">
             <div class="download-speed">
                 <div class="speed-display">
@@ -238,24 +237,25 @@
             const locationEl = document.getElementById('location');
 
             // কনফিগারেশন
-            const downloadTestUrl = 'https://testfiles.site/10mb/file'; 
+            // ⭐ ডাউনলোড URL ফিক্সড (Cloudflare CDN ব্যবহার করা হয়েছে, যা দ্রুত এবং নির্ভরযোগ্য) ⭐
+            const downloadTestUrl = 'https://speed.cloudflare.com/__down?bytes=10485760'; // 10MB file
             const downloadSizeInBytes = 10 * 1024 * 1024; // 10MB
             
-            // ISP API URL (ipwho.is - আপনার দেওয়া কোড থেকে নেওয়া হয়েছে)
-            const ispApiUrl = 'https://ipwho.is/'; 
+            // ⭐ ISP API ফিক্সড (ip-api.com ব্যবহার করা হয়েছে) ⭐
+            const ispApiUrl = 'http://ip-api.com/json/'; 
             
-            // ⭐ ISP তথ্য লোড করার ফাংশন (আপনার দেওয়া কোড থেকে কপি করা) ⭐
+            // ⭐ ISP তথ্য লোড করার ফাংশন (ip-api এর জন্য আপডেট করা হলো) ⭐
             async function fetchISPInfo() {
                 try {
                     const response = await fetch(ispApiUrl);
                     const data = await response.json();
 
-                    if (data.success) {
-                        ipAddressEl.textContent = data.ip || '--';
-                        // ISP তথ্য connection অবজেক্ট থেকে নেওয়া
-                        ispNameEl.textContent = data.connection.isp || data.connection.org || 'পাওয়া যায়নি';
+                    if (data.status === 'success') {
+                        // ip-api.com থেকে ডেটা আনার পদ্ধতি
+                        ipAddressEl.textContent = data.query || '--';
+                        ispNameEl.textContent = data.isp || 'পাওয়া যায়নি';
                         locationEl.textContent = `${data.city || ''}, ${data.country || ''}`;
-                        ispNameEl.style.color = "#c9d1d9"; // ডার্ক থিম কালার
+                        ispNameEl.style.color = "#c9d1d9"; 
                     } else {
                         console.error('API Error:', data.message);
                         ipAddressEl.textContent = 'ত্রুটি';
@@ -266,7 +266,7 @@
                 } catch (error) {
                     console.error('Fetch Error:', error);
                     ipAddressEl.textContent = 'নেটওয়ার্ক সমস্যা';
-                    ispNameEl.textContent = 'তথ্য লোড করা যায়নি';
+                    ispNameEl.textContent = 'তথ্য লোড করা যায়নি (ব্রাউজারে HTTP ব্লক হতে পারে)';
                     locationEl.textContent = 'নেটওয়ার্ক সমস্যা';
                     ispNameEl.style.color = "#f85149"; // লাল রং
                 }
@@ -348,7 +348,7 @@
                     
                     downSpeedDisplay.classList.add('error-color');
                     
-                    statusMessage.textContent = 'স্পিড টেস্ট করা যায়নি। ইন্টারনেট সংযোগ নিশ্চিত করুন।';
+                    statusMessage.textContent = 'স্পিড টেস্ট করা যায়নি। ইন্টারনেট সংযোগ বা টেস্টিং সার্ভার নিশ্চিত করুন।';
                 } finally {
                     startButton.disabled = false;
                     startButton.textContent = 'আবার চেষ্টা করুন';
