@@ -3,247 +3,363 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ISP Checker - OSPranto Tech</title>
-    <style>
-        /* CSS Styling */
-        :root {
-            --primary-color: #007bff; /* নীল */
-            --secondary-color: #343a40; /* কালো */
-            --background-color: #f8f9fa; /* হালকা ধূসর */
-            --card-background: #ffffff; /* সাদা */
-        }
+    <title>নেট স্পিড মিটার | OSPranto Tech</title>
+    
+    <link rel="icon" href="logo.png" type="image/png">
 
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS স্টাইল - Dark Mode (GitHub থিম) */
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--background-color);
-            color: var(--secondary-color);
-            text-align: center;
-            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            background-color: #0d1117; 
+            color: #c9d1d9;
             display: flex;
             flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
         }
 
         .container {
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 20px;
-            flex-grow: 1;
-            width: 90%;
-        }
-
-        header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 20px 0;
+            background-color: #161b22; 
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 400px;
             margin-bottom: 30px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* লোগো স্টাইল */
+        .logo {
+            margin-bottom: 15px;
+        }
+        
+        .logo img {
+            width: 80px; 
+            height: 80px;
+            border-radius: 50%; 
+            border: 3px solid #58a6ff;
+            box-shadow: 0 0 10px rgba(88, 166, 255, 0.5);
         }
 
-        header h1 {
-            margin: 0;
-            font-size: 2.5em;
+        .branding {
+            color: #58a6ff; 
+            margin-bottom: 5px;
+            font-size: 1.8em;
+            font-weight: 700;
         }
 
-        .isp-card, .contact-card {
-            background-color: var(--card-background);
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            margin-bottom: 30px;
+        .subtitle {
+            font-size: 0.9em;
+            color: #8b949e;
+            margin-bottom: 25px;
+        }
+
+        /* ⭐ ISP তথ্য ডিসপ্লে স্টাইল (পরিবর্তিত) ⭐ */
+        .isp-info {
+            margin-bottom: 25px;
+            padding: 10px 0;
+            font-size: 0.9em;
+            color: #8b949e;
+            border-bottom: 1px dashed #30363d; /* স্পিড সেকশন থেকে আলাদা করার জন্য */
             text-align: left;
         }
-
-        .isp-card h2 {
-            color: var(--primary-color);
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 10px;
-            margin-top: 0;
-            display: flex;
-            align-items: center;
-        }
         
-        .isp-card h2 span {
-            margin-right: 10px;
-        }
-
-        #isp-result {
-            font-size: 1.1em;
-            line-height: 1.8;
-        }
-
-        .loading {
-            color: gray;
-            font-weight: bold;
-        }
-        
-        #isp-result p strong {
+        /* ISP নাম এবং IP অ্যাড্রেস হাইলাইট */
+        .isp-info strong {
+            color: #c9d1d9;
             display: block;
-            font-size: 1.2em;
-            color: #212529;
             margin-top: 5px;
+            font-weight: 600;
+        }
+        
+        /* ⭐ স্পিড মিটার ডিসপ্লে স্টাইল ⭐ */
+        .result-area {
+            margin: 30px 0;
+            padding: 20px;
+            background-color: #0d1117; 
+            border-radius: 12px;
+            border: 1px solid #30363d;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.7);
+            position: relative;
         }
 
-        .contact-card h3 {
-            color: var(--secondary-color);
-            margin-bottom: 15px;
-            border-bottom: 1px dashed #ccc;
-            padding-bottom: 5px;
+        .speed-display {
+            font-size: 3.5em; 
+            font-weight: 700;
+            line-height: 1.1;
+            transition: color 0.5s ease-in-out; 
+        }
+        
+        .result-area::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            bottom: 5px;
+            border-radius: 10px;
+            border: 2px solid rgba(88, 166, 255, 0.2);
+            pointer-events: none; 
         }
 
-        .contact-card ul {
-            list-style: none;
-            padding: 0;
+        .download-speed {
+            margin-bottom: 20px;
+        }
+        
+        #unit-mbps-down {
+            font-size: 0.45em; 
+            display: block;
+            color: #c9d1d9;
+            font-weight: 400;
+            margin-top: 10px; 
+            line-height: 1.1;
         }
 
-        .contact-card li {
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 5px 0;
-            flex-wrap: wrap; /* মোবাইলের জন্য */
+        .secondary-display {
+            margin-top: 20px;
+            font-size: 1em;
+            color: #8b949e;
+            padding-top: 10px;
+            border-top: 1px dashed #30363d;
+        }
+        
+        /* বাটনের স্টাইল ও ত্রুটি রং */
+        #start-button {
+            /* ... (Buttons styles remain the same) ... */
+            background-color: #238636;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: background-color 0.3s, transform 0.1s;
+            width: 100%;
+            margin-bottom: 20px; 
         }
 
-        .contact-card li strong {
-            min-width: 80px;
+        #start-button:hover {
+            background-color: #2ea043;
         }
 
-        .contact-card a {
-            color: var(--primary-color);
+        #start-button:active {
+            transform: scale(0.98);
+        }
+
+        #start-button:disabled {
+            background-color: #30363d;
+            cursor: not-allowed;
+        }
+        
+        .contact-link {
+            display: block;
             text-decoration: none;
-            transition: color 0.3s;
-            text-align: right;
-            flex-grow: 1;
-        }
-
-        .contact-card a:hover {
-            color: #0056b3;
-            text-decoration: underline;
-        }
-
-        footer {
-            margin-top: auto;
-            padding: 15px;
-            font-size: 0.9em;
-            color: #fff;
-            background-color: var(--secondary-color);
+            color: #58a6ff; 
+            font-weight: 600;
+            padding: 10px 0;
+            border: 1px solid #58a6ff;
+            border-radius: 6px;
+            transition: background-color 0.3s;
             width: 100%;
         }
 
-        @media (max-width: 600px) {
-            .container {
-                margin: 20px auto;
-                padding: 10px;
-            }
-            header h1 {
-                font-size: 2em;
-            }
+        .contact-link:hover {
+            background-color: #58a6ff1a; 
+        }
+
+        .status-message {
+            margin-top: 20px;
+            min-height: 20px;
+            font-size: 0.9em;
+            color: #8b949e;
+        }
+        
+        .error-color {
+            color: #f85149 !important;
+            text-shadow: 0 0 5px rgba(248, 81, 73, 0.5);
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>OSPranto Tech</h1>
-    </header>
-
     <div class="container">
+        <div class="logo">
+            <img src="logo.png" alt="OSPranto Tech Logo">
+        </div>
         
-        <div class="isp-card">
-            <h2><span>🌐</span>আপনার ISP তথ্য</h2>
-            <div id="isp-result">
-                <p class="loading">ISP তথ্য অনুসন্ধান করা হচ্ছে...</p>
-                <p>IP অ্যাড্রেস: <strong id="ip-address">--</strong></p>
-                <p>ISP নাম: <strong id="isp-name">--</strong></p>
-                <p>অবস্থান: <strong id="location">--</strong></p>
+        <h1 class="branding">ইন্টারনেট স্পিড মিটার</h1>
+        <p class="subtitle">Powered by **OSPranto Tech**</p>
+        
+        <div class="isp-info">
+            <p style="margin-bottom: 5px;">🌐 IP অ্যাড্রেস: <strong id="ip-address">--</strong></p>
+            আপনার ISP: 
+            <strong id="isp-name">তথ্য লোড হচ্ছে...</strong>
+            <p style="margin-top: 5px;">অবস্থান: <strong id="location">--</strong></p>
+        </div>
+        <div class="result-area">
+            <div class="download-speed">
+                <div class="speed-display">
+                    <span id="speed-mbps-down">0.00</span>
+                    <span id="unit-mbps-down">ডাউনলোড স্পিড (Mbps)</span>
+                </div>
+            </div>
+            
+            <div class="secondary-display">
+                প্রকৃত ডাউনলোড স্পিড: 
+                <span id="speed-mbps-cap">0.00</span>
+                **MBps**
             </div>
         </div>
 
-        <div class="contact-card">
-            <h3>📞 OSPranto Tech - যোগাযোগ</h3>
-            <ul>
-                <li>
-                    <strong>Facebook:</strong> 
-                    <a href="https://www.facebook.com/AdnanHasanPranto" target="_blank">Adnan Hasan Pranto</a>
-                </li>
-                <li>
-                    <strong>Email:</strong> 
-                    <a href="mailto:OSPranto.Official@gmail.com">OSPranto.Official@gmail.com</a>
-                </li>
-                <li>
-                    <strong>GitHub:</strong> 
-                    <a href="https://github.com/OSPrantoTech" target="_blank">OSPranto Tech</a>
-                </li>
-                <li>
-                    <strong>Telegram:</strong> 
-                    <a href="https://t.me/MrMysteryMoon" target="_blank">@MrMysteryMoon</a>
-                </li>
-            </ul>
-        </div>
+        <button id="start-button">টেস্ট শুরু করুন</button>
+        
+        <a href="contact.html" class="contact-link">যোগাযোগ করুন (Contact Us)</a>
 
+        <p id="status-message" class="status-message">উপরে আপনার সংযোগের বর্তমান গতি দেখতে পাবেন।</p>
     </div>
 
-    <footer>
-        &copy; 2025 OSPranto Tech. All rights reserved.
-    </footer>
-
     <script>
-        // JavaScript Logic
         document.addEventListener('DOMContentLoaded', () => {
-            fetchISPInfo();
-        });
-
-        async function fetchISPInfo() {
-            const resultDiv = document.getElementById('isp-result');
+            const startButton = document.getElementById('start-button');
+            const downSpeedDisplay = document.getElementById('speed-mbps-down');
+            const speedMbpsCapDisplay = document.getElementById('speed-mbps-cap');
+            const statusMessage = document.getElementById('status-message');
+            
+            // ISP ডিসপ্লে এলিমেন্টস
             const ipAddressEl = document.getElementById('ip-address');
             const ispNameEl = document.getElementById('isp-name');
             const locationEl = document.getElementById('location');
-            const loadingMsg = document.querySelector('.loading');
 
-            // নতুন API: ipwho.is (এটি ফ্রি এবং HTTPS সাপোর্ট করে)
-            const apiEndpoint = 'https://ipwho.is/';
+            // কনফিগারেশন
+            const downloadTestUrl = 'https://testfiles.site/10mb/file'; 
+            const downloadSizeInBytes = 10 * 1024 * 1024; // 10MB
+            
+            // ISP API URL (ipwho.is - আপনার দেওয়া কোড থেকে নেওয়া হয়েছে)
+            const ispApiUrl = 'https://ipwho.is/'; 
+            
+            // ⭐ ISP তথ্য লোড করার ফাংশন (আপনার দেওয়া কোড থেকে কপি করা) ⭐
+            async function fetchISPInfo() {
+                try {
+                    const response = await fetch(ispApiUrl);
+                    const data = await response.json();
 
-            try {
-                const response = await fetch(apiEndpoint);
-                const data = await response.json();
-
-                // লোডিং মেসেজ লুকিয়ে ফেলুন
-                if (loadingMsg) loadingMsg.style.display = 'none';
-
-                if (data.success) {
-                    // সফলভাবে তথ্য পাওয়া গেলে
-                    ipAddressEl.textContent = data.ip || 'পাওয়া যায়নি';
-                    // ISP তথ্য connection অবজেক্টের ভিতরে থাকে
-                    ispNameEl.textContent = data.connection.isp || data.connection.org || 'পাওয়া যায়নি';
-                    locationEl.textContent = `${data.city || ''}, ${data.country || ''}`;
-                    
-                    // সফল হওয়ার পর টেক্সট কালার সাধারণ করুন
-                    ispNameEl.style.color = "#212529"; 
-
-                } else {
-                    // API যদি ফেইল করে (যেমন প্রাইভেট নেটওয়ার্ক বা অন্য কারণে)
-                    console.error('API Error:', data.message);
-                    ipAddressEl.textContent = 'ত্রুটি';
-                    ispNameEl.textContent = 'ISP খুঁজে পাওয়া যায়নি';
-                    ispNameEl.style.color = "red";
-                    locationEl.textContent = 'ত্রুটি';
+                    if (data.success) {
+                        ipAddressEl.textContent = data.ip || '--';
+                        // ISP তথ্য connection অবজেক্ট থেকে নেওয়া
+                        ispNameEl.textContent = data.connection.isp || data.connection.org || 'পাওয়া যায়নি';
+                        locationEl.textContent = `${data.city || ''}, ${data.country || ''}`;
+                        ispNameEl.style.color = "#c9d1d9"; // ডার্ক থিম কালার
+                    } else {
+                        console.error('API Error:', data.message);
+                        ipAddressEl.textContent = 'ত্রুটি';
+                        ispNameEl.textContent = 'ISP খুঁজে পাওয়া যায়নি';
+                        locationEl.textContent = 'ত্রুটি';
+                        ispNameEl.style.color = "#f85149"; // লাল রং
+                    }
+                } catch (error) {
+                    console.error('Fetch Error:', error);
+                    ipAddressEl.textContent = 'নেটওয়ার্ক সমস্যা';
+                    ispNameEl.textContent = 'তথ্য লোড করা যায়নি';
+                    locationEl.textContent = 'নেটওয়ার্ক সমস্যা';
+                    ispNameEl.style.color = "#f85149"; // লাল রং
                 }
-
-            } catch (error) {
-                // নেটওয়ার্ক ত্রুটি ঘটলে
-                console.error('Fetch Error:', error);
-                
-                if (loadingMsg) loadingMsg.style.display = 'none';
-                
-                ipAddressEl.textContent = 'নেটওয়ার্ক সমস্যা';
-                ispNameEl.textContent = 'তথ্য লোড করা যায়নি (Adblocker বা DNS সমস্যা হতে পারে)';
-                ispNameEl.style.color = "red";
-                locationEl.textContent = '--';
             }
-        }
-    </script>
+            
+            // স্পিড অনুযায়ী রঙ সেট করা
+            function setSpeedColor(displayElement, speedInMbps) {
+                let color, shadow;
+                if (speedInMbps < 5) {
+                    color = '#f85149'; 
+                    shadow = '0 0 5px rgba(248, 81, 73, 0.5)';
+                } else if (speedInMbps < 25) {
+                    color = '#ffaa1d'; 
+                    shadow = '0 0 5px rgba(255, 170, 29, 0.5)';
+                } else {
+                    color = '#2ea043'; 
+                    shadow = '0 0 5px rgba(46, 160, 67, 0.5)';
+                }
+                displayElement.style.color = color;
+                displayElement.style.textShadow = shadow;
+                displayElement.classList.remove('error-color');
+            }
+            
+            // ⭐ ডাউনলোড স্পিড পরিমাপের ফাংশন ⭐
+            async function measureDownloadSpeed() {
+                statusMessage.textContent = 'ডাউনলোড পরীক্ষা চলছে...';
+                
+                const startTime = new Date().getTime();
+                const response = await fetch(downloadTestUrl, { cache: 'no-store' });
+                
+                if (!response.ok) {
+                    throw new Error(`Download failed with status: ${response.status}`);
+                }
+                
+                const blob = await response.blob();
+                
+                const endTime = new Date().getTime();
+                const durationInSeconds = (endTime - startTime) / 1000;
 
+                if (durationInSeconds === 0) throw new Error("Zero duration for download.");
+                
+                const speedInBytesPerSecond = downloadSizeInBytes / durationInSeconds;
+                const speedInMbps = (speedInBytesPerSecond * 8) / (1024 * 1024);
+                const speedInMegaBytesPerSecond = speedInMbps / 8; 
+
+                downSpeedDisplay.textContent = speedInMbps.toFixed(2);
+                speedMbpsCapDisplay.textContent = speedInMegaBytesPerSecond.toFixed(2);
+                setSpeedColor(downSpeedDisplay, speedInMbps);
+
+                return speedInMbps;
+            }
+
+
+            async function measureSpeed() {
+                // ডিসপ্লে রিসেট ও বাটন ডিজেবল
+                startButton.disabled = true;
+                startButton.textContent = 'টেস্ট চলছে... দয়া করে অপেক্ষা করুন।';
+                
+                downSpeedDisplay.textContent = '...';
+                speedMbpsCapDisplay.textContent = '...';
+
+                // রঙ রিসেট করা
+                downSpeedDisplay.style.color = '#8b949e'; 
+                downSpeedDisplay.style.textShadow = 'none';
+                downSpeedDisplay.classList.remove('error-color');
+                
+                try {
+                    // ডাউনলোড টেস্ট
+                    const downloadSpeed = await measureDownloadSpeed();
+                    
+                    statusMessage.textContent = `টেস্ট সম্পন্ন! ডাউনলোড: ${downloadSpeed.toFixed(2)} Mbps।`;
+
+                } catch (error) {
+                    console.error("স্পিড পরিমাপে ত্রুটি:", error);
+                    
+                    // ত্রুটি হলে ডিসপ্লেতে লাল রঙ এবং 'ত্রুটি!' দেখানো
+                    downSpeedDisplay.textContent = 'ত্রুটি!';
+                    speedMbpsCapDisplay.textContent = 'ত্রুটি!';
+                    
+                    downSpeedDisplay.classList.add('error-color');
+                    
+                    statusMessage.textContent = 'স্পিড টেস্ট করা যায়নি। ইন্টারনেট সংযোগ নিশ্চিত করুন।';
+                } finally {
+                    startButton.disabled = false;
+                    startButton.textContent = 'আবার চেষ্টা করুন';
+                }
+            }
+            
+            // পেজ লোড হওয়ার সাথে সাথে ISP তথ্য লোড করা
+            fetchISPInfo();
+
+            startButton.addEventListener('click', measureSpeed);
+        });
+    </script>
 </body>
 </html>
