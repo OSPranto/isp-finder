@@ -60,7 +60,7 @@
             margin-bottom: 25px;
         }
 
-        /* ISP তথ্য ডিসপ্লে স্টাইল */
+        /* ⭐ ISP তথ্য ডিসপ্লে স্টাইল (আপনার আগের কোডের সাথে সামঞ্জস্য রেখে) ⭐ */
         .isp-info {
             margin-bottom: 25px;
             padding: 10px 0;
@@ -128,7 +128,7 @@
             border-top: 1px dashed #30363d;
         }
         
-        /* বাটনের স্টাইল */
+        /* বাটনের স্টাইল ও ত্রুটি রং */
         #start-button {
             background-color: #238636;
             color: white;
@@ -237,23 +237,22 @@
             const locationEl = document.getElementById('location');
 
             // কনফিগারেশন
-            // ⭐ ডাউনলোড URL ফিক্সড (Cloudflare CDN ব্যবহার করা হয়েছে, যা দ্রুত এবং নির্ভরযোগ্য) ⭐
-            const downloadTestUrl = 'https://speed.cloudflare.com/__down?bytes=10485760'; // 10MB file
+            const downloadTestUrl = 'https://speed.cloudflare.com/__down?bytes=10485760'; // নির্ভরযোগ্য Cloudflare URL
             const downloadSizeInBytes = 10 * 1024 * 1024; // 10MB
             
-            // ⭐ ISP API ফিক্সড (ip-api.com ব্যবহার করা হয়েছে) ⭐
-            const ispApiUrl = 'http://ip-api.com/json/'; 
+            // ⭐ ISP API URL (আপনার দেওয়া কার্যকরী ipwho.is API) ⭐
+            const ispApiUrl = 'https://ipwho.is/'; 
             
-            // ⭐ ISP তথ্য লোড করার ফাংশন (ip-api এর জন্য আপডেট করা হলো) ⭐
+            // ⭐ ISP তথ্য লোড করার ফাংশন (আপনার দেওয়া কার্যকরী কোড থেকে) ⭐
             async function fetchISPInfo() {
                 try {
                     const response = await fetch(ispApiUrl);
                     const data = await response.json();
 
-                    if (data.status === 'success') {
-                        // ip-api.com থেকে ডেটা আনার পদ্ধতি
-                        ipAddressEl.textContent = data.query || '--';
-                        ispNameEl.textContent = data.isp || 'পাওয়া যায়নি';
+                    if (data.success) {
+                        // ipwho.is থেকে ডেটা আনার পদ্ধতি
+                        ipAddressEl.textContent = data.ip || '--';
+                        ispNameEl.textContent = data.connection.isp || data.connection.org || 'পাওয়া যায়নি';
                         locationEl.textContent = `${data.city || ''}, ${data.country || ''}`;
                         ispNameEl.style.color = "#c9d1d9"; 
                     } else {
@@ -261,14 +260,14 @@
                         ipAddressEl.textContent = 'ত্রুটি';
                         ispNameEl.textContent = 'ISP খুঁজে পাওয়া যায়নি';
                         locationEl.textContent = 'ত্রুটি';
-                        ispNameEl.style.color = "#f85149"; // লাল রং
+                        ispNameEl.style.color = "#f85149";
                     }
                 } catch (error) {
                     console.error('Fetch Error:', error);
                     ipAddressEl.textContent = 'নেটওয়ার্ক সমস্যা';
-                    ispNameEl.textContent = 'তথ্য লোড করা যায়নি (ব্রাউজারে HTTP ব্লক হতে পারে)';
+                    ispNameEl.textContent = 'তথ্য লোড করা যায়নি';
                     locationEl.textContent = 'নেটওয়ার্ক সমস্যা';
-                    ispNameEl.style.color = "#f85149"; // লাল রং
+                    ispNameEl.style.color = "#f85149"; 
                 }
             }
             
@@ -290,7 +289,7 @@
                 displayElement.classList.remove('error-color');
             }
             
-            // ⭐ ডাউনলোড স্পিড পরিমাপের ফাংশন ⭐
+            // ⭐ ডাউনলোড স্পিড পরিমাপের ফাংশন (সর্বশেষ কার্যকরী কোড থেকে) ⭐
             async function measureDownloadSpeed() {
                 statusMessage.textContent = 'ডাউনলোড পরীক্ষা চলছে...';
                 
