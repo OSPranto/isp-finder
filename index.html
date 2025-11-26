@@ -133,21 +133,39 @@
             padding-top: 15px;
             font-size: 0.95em;
             color: #8b949e;
+            display: flex; /* ফ্লেক্স লেআউট ব্যবহার করে আইটেমগুলোকে সাজানো */
+            justify-content: space-around; /* লেবেলগুলো দূরে দূরে রাখা */
+            flex-wrap: wrap;
         }
 
         .real-speed-section strong {
             color: #c9d1d9; 
             font-weight: 600;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        /* ⭐ রিয়েল স্পিড আইটেম স্টাইল ⭐ */
+        .real-speed-item {
+            display: inline-block;
+            text-align: center;
+            padding: 0 10px;
         }
 
         .real-speed-value {
             color: #58a6ff;
             font-weight: bold;
             font-size: 1.1em;
-            margin-left: 5px;
-            margin-right: 15px;
-            display: inline-block;
+            display: block;
+            line-height: 1;
         }
+
+        .real-speed-unit {
+            font-size: 0.8em;
+            color: #8b949e;
+            margin-top: 3px;
+        }
+
 
         /* বাটনের স্টাইল */
         #start-button {
@@ -242,9 +260,16 @@
             </div>
 
             <div class="real-speed-section">
-                <strong>রিয়েল স্পিড (MB/s):</strong> 
-                <span class="real-speed-value" id="real-download-mb">0.00</span> 
-                <span class="real-speed-value" id="real-upload-mb">0.00</span>
+                <div class="real-speed-item">
+                    <strong>ডাউনলোড (MB/s)</strong>
+                    <span class="real-speed-value" id="real-download-mb">0.00</span>
+                    <span class="real-speed-unit">মেগাবাইট/সেকেন্ড</span>
+                </div>
+                <div class="real-speed-item">
+                    <strong>আপলোড (MB/s)</strong>
+                    <span class="real-speed-value" id="real-upload-mb">0.00</span>
+                    <span class="real-speed-unit">মেগাবাইট/সেকেন্ড</span>
+                </div>
             </div>
         </div>
 
@@ -260,8 +285,8 @@
             const startButton = document.getElementById('start-button');
             const downSpeedDisplay = document.getElementById('speed-mbps-down');
             const upSpeedDisplay = document.getElementById('speed-mbps-up');
-            const realDownloadDisplay = document.getElementById('real-download-mb'); // রিয়েল ডাউনলোড এলিমেন্ট
-            const realUploadDisplay = document.getElementById('real-upload-mb');     // ⭐ রিয়েল আপলোড এলিমেন্ট (নতুন) ⭐
+            const realDownloadDisplay = document.getElementById('real-download-mb');
+            const realUploadDisplay = document.getElementById('real-upload-mb');
             const statusMessage = document.getElementById('status-message');
             
             // ISP ডিসপ্লে এলিমেন্টস
@@ -282,16 +307,19 @@
                     const data = await response.json();
 
                     if (data.success) {
+                        // ISP তথ্য সঠিকভাবে পাওয়া গেলে
                         ispNameEl.textContent = data.connection.isp || data.connection.org || 'পাওয়া যায়নি';
                         locationEl.textContent = `${data.city || ''}, ${data.country || ''}`;
                         ispNameEl.style.color = "#c9d1d9"; 
                     } else {
+                        // API এরর বা অন্য কোনো সমস্যা হলে
                         console.error('API Error:', data.message);
                         ispNameEl.textContent = 'ISP খুঁজে পাওয়া যায়নি';
                         locationEl.textContent = 'ত্রুটি';
                         ispNameEl.style.color = "#f85149";
                     }
                 } catch (error) {
+                    // নেটওয়ার্ক বা ফেচ এরর হলে
                     console.error('Fetch Error:', error);
                     ispNameEl.textContent = 'তথ্য লোড করা যায়নি';
                     locationEl.textContent = 'নেটওয়ার্ক সমস্যা';
@@ -347,7 +375,7 @@
                 return speedInMbps;
             }
 
-            // ⭐ আপলোড স্পিড এবং রিয়েল আপলোড স্পিড হিসাব (পরিবর্তন) ⭐
+            // আপলোড স্পিড এবং রিয়েল আপলোড স্পিড হিসাব
             async function measureUploadSpeed() {
                 statusMessage.textContent = 'আপলোড স্পিড মাপা হচ্ছে...';
                 
@@ -375,7 +403,7 @@
 
                 // ডিসপ্লে আপডেট
                 upSpeedDisplay.textContent = speedInMbps.toFixed(2);
-                realUploadDisplay.textContent = speedInMBps.toFixed(2); // রিয়েল আপলোড স্পিড শো করা হচ্ছে
+                realUploadDisplay.textContent = speedInMBps.toFixed(2); 
 
                 setSpeedColor(upSpeedDisplay, speedInMbps);
                 
@@ -391,7 +419,7 @@
                 downSpeedDisplay.textContent = '...';
                 upSpeedDisplay.textContent = '...';
                 realDownloadDisplay.textContent = '0.00'; 
-                realUploadDisplay.textContent = '0.00'; // রিয়েল আপলোড রিসেট
+                realUploadDisplay.textContent = '0.00'; 
                 
                 downSpeedDisplay.style.color = '#8b949e';
                 upSpeedDisplay.style.color = '#8b949e';
@@ -403,7 +431,7 @@
                     await new Promise(r => setTimeout(r, 500)); 
                     await measureUploadSpeed();
                     
-                    statusMessage.textContent = 'টেস্ট সম্পন্ন হয়েছে!';
+                    statusMessage.textContent = 'টেস্ট সম্পন্ন হয়েছে! নিচে রিয়েল স্পিড দেখুন।';
 
                 } catch (error) {
                     console.error("স্পিড পরিমাপে ত্রুটি:", error);
