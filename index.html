@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISP Checker - OSPranto Tech</title>
+    <style>
+        /* CSS Styling */
+        :root {
+            --primary-color: #007bff; /* নীল */
+            --secondary-color: #343a40; /* কালো */
+            --background-color: #f8f9fa; /* হালকা ধূসর */
+            --card-background: #ffffff; /* সাদা */
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--secondary-color);
+            text-align: center;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-radius: 8px 8px 0 0;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+
+        .isp-card, .contact-card {
+            background-color: var(--card-background);
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .isp-card h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        #isp-result {
+            font-size: 1.2em;
+            line-height: 1.6;
+        }
+
+        .loading {
+            color: gray;
+        }
+
+        .contact-card h3 {
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            border-bottom: 1px dashed #ccc;
+            padding-bottom: 5px;
+        }
+
+        .contact-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .contact-card li {
+            margin-bottom: 10px;
+        }
+
+        .contact-card a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .contact-card a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+
+        footer {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 20px;
+                padding: 10px;
+            }
+            header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>OSPranto Tech</h1>
+    </header>
+
+    <div class="container">
+        
+        <div class="isp-card">
+            <h2>🌍 আপনার ISP তথ্য</h2>
+            <div id="isp-result">
+                <p class="loading">আপনার ইন্টারনেট সার্ভিস প্রোভাইডার (ISP) লোড হচ্ছে...</p>
+                <p>IP অ্যাড্রেস: <strong id="ip-address">Loading...</strong></p>
+                <p>ISP নাম: <strong id="isp-name">Loading...</strong></p>
+                <p>অবস্থান: <strong id="location">Loading...</strong></p>
+            </div>
+        </div>
+
+        <div class="contact-card">
+            <h3>📞 OSPranto Tech - যোগাযোগ</h3>
+            <ul>
+                <li>
+                    <strong>Facebook:</strong> 
+                    <a href="https://www.facebook.com/AdnanHasanPranto" target="_blank">Adnan Hasan Pranto</a>
+                </li>
+                <li>
+                    <strong>Email:</strong> 
+                    <a href="mailto:OSPranto.Official@gmail.com">OSPranto.Official@gmail.com</a>
+                </li>
+                <li>
+                    <strong>GitHub:</strong> 
+                    <a href="https://github.com/OSPrantoTech" target="_blank">OSPranto Tech</a> 
+                    (আপনার GitHub প্রোফাইল লিঙ্কটি এখানে দিন)
+                </li>
+                <li>
+                    <strong>Telegram:</strong> 
+                    <a href="https://t.me/MrMysteryMoon" target="_blank">@MrMysteryMoon</a>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+
+    <footer>
+        &copy; 2025 OSPranto Tech. All rights reserved.
+    </footer>
+
+    <script>
+        // JavaScript Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchISPInfo();
+        });
+
+        async function fetchISPInfo() {
+            const resultDiv = document.getElementById('isp-result');
+            const ipAddressEl = document.getElementById('ip-address');
+            const ispNameEl = document.getElementById('isp-name');
+            const locationEl = document.getElementById('location');
+
+            // API endpoint for IP Geolocation (using ip-api.com as it's simple and CORS-friendly)
+            // এটি ভিজিটরের IP অ্যাড্রেস এবং সংশ্লিষ্ট ISP তথ্য JSON ফরম্যাটে ফেরত দেবে।
+            const apiEndpoint = 'http://ip-api.com/json/?fields=status,message,country,city,isp,query';
+
+            try {
+                const response = await fetch(apiEndpoint);
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    // সফলভাবে তথ্য পাওয়া গেলে
+                    ipAddressEl.textContent = data.query || 'N/A';
+                    ispNameEl.textContent = data.isp || 'তথ্য পাওয়া যায়নি';
+                    locationEl.textContent = `${data.city || 'N/A'}, ${data.country || 'N/A'}`;
+
+                    // লোডিং বার্তাটি সরিয়ে দিন
+                    const loadingMessage = resultDiv.querySelector('.loading');
+                    if (loadingMessage) {
+                        loadingMessage.remove();
+                    }
+
+                } else {
+                    // API থেকে অসফল সাড়া পেলে
+                    console.error('API Error:', data.message);
+                    ipAddressEl.textContent = 'ত্রুটি';
+                    ispNameEl.textContent = 'ISP তথ্য লোড করা যায়নি। (API ত্রুটি)';
+                    locationEl.textContent = 'ত্রুটি';
+                    resultDiv.querySelector('.loading').textContent = 'তথ্য লোড করতে সমস্যা হয়েছে।';
+                }
+
+            } catch (error) {
+                // নেটওয়ার্ক বা অন্যান্য ত্রুটি ঘটলে
+                console.error('Fetch Error:', error);
+                ipAddressEl.textContent = 'ত্রুটি';
+                ispNameEl.textContent = 'নেটওয়ার্ক ত্রুটি বা ব্লক করা হয়েছে।';
+                locationEl.textContent = 'ত্রুটি';
+                resultDiv.querySelector('.loading').textContent = 'তথ্য লোড করতে সমস্যা হয়েছে।';
+            }
+        }
+    </script>
+
+</body>
+</html>
