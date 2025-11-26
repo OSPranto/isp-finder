@@ -75,6 +75,7 @@
 
         .loading {
             color: gray;
+            font-weight: bold;
         }
         
         #isp-result p strong {
@@ -102,6 +103,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 5px 0;
+            flex-wrap: wrap; /* মোবাইলের জন্য */
         }
 
         .contact-card li strong {
@@ -122,7 +124,7 @@
         }
 
         footer {
-            margin-top: auto; /* ফুটারে নিচে রাখতে সাহায্য করে */
+            margin-top: auto;
             padding: 15px;
             font-size: 0.9em;
             color: #fff;
@@ -152,10 +154,10 @@
         <div class="isp-card">
             <h2><span>🌐</span>আপনার ISP তথ্য</h2>
             <div id="isp-result">
-                <p class="loading">আপনার ইন্টারনেট সার্ভিস প্রোভাইডার (ISP) লোড হচ্ছে...</p>
-                <p>IP অ্যাড্রেস: <strong id="ip-address">Loading...</strong></p>
-                <p>ISP নাম: <strong id="isp-name">Loading...</strong></p>
-                <p>অবস্থান: <strong id="location">Loading...</strong></p>
+                <p class="loading">ISP তথ্য অনুসন্ধান করা হচ্ছে...</p>
+                <p>IP অ্যাড্রেস: <strong id="ip-address">--</strong></p>
+                <p>ISP নাম: <strong id="isp-name">--</strong></p>
+                <p>অবস্থান: <strong id="location">--</strong></p>
             </div>
         </div>
 
@@ -198,51 +200,47 @@
             const ipAddressEl = document.getElementById('ip-address');
             const ispNameEl = document.getElementById('isp-name');
             const locationEl = document.getElementById('location');
+            const loadingMsg = document.querySelector('.loading');
 
-            // গুরুত্বপূর্ণ: প্রোটোকল ত্রুটি (Mixed Content) এড়াতে https ব্যবহার করা হয়েছে।
-            const apiEndpoint = 'https://ip-api.com/json/?fields=status,message,country,city,isp,query';
-
-            // নিশ্চিত করি যে লোডিং অবস্থা শুরুতে দেখাচ্ছে
-            ipAddressEl.textContent = 'লোড হচ্ছে...';
-            ispNameEl.textContent = 'লোড হচ্ছে...';
-            locationEl.textContent = 'লোড হচ্ছে...';
-            const initialLoadingMessage = resultDiv.querySelector('.loading');
-            if (initialLoadingMessage) initialLoadingMessage.style.display = 'block';
-
+            // নতুন API: ipwho.is (এটি ফ্রি এবং HTTPS সাপোর্ট করে)
+            const apiEndpoint = 'https://ipwho.is/';
 
             try {
                 const response = await fetch(apiEndpoint);
                 const data = await response.json();
 
-                // লোডিং বার্তা সরিয়ে দিন
-                if (initialLoadingMessage) initialLoadingMessage.style.display = 'none';
+                // লোডিং মেসেজ লুকিয়ে ফেলুন
+                if (loadingMsg) loadingMsg.style.display = 'none';
 
-                if (data.status === 'success') {
+                if (data.success) {
                     // সফলভাবে তথ্য পাওয়া গেলে
-                    ipAddressEl.textContent = data.query || 'N/A';
-                    ispNameEl.textContent = data.isp || 'তথ্য পাওয়া যায়নি';
-                    locationEl.textContent = `${data.city || 'N/A'}, ${data.country || 'N/A'}`;
+                    ipAddressEl.textContent = data.ip || 'পাওয়া যায়নি';
+                    // ISP তথ্য connection অবজেক্টের ভিতরে থাকে
+                    ispNameEl.textContent = data.connection.isp || data.connection.org || 'পাওয়া যায়নি';
+                    locationEl.textContent = `${data.city || ''}, ${data.country || ''}`;
+                    
+                    // সফল হওয়ার পর টেক্সট কালার সাধারণ করুন
+                    ispNameEl.style.color = "#212529"; 
 
                 } else {
-                    // API থেকে অসফল সাড়া পেলে
+                    // API যদি ফেইল করে (যেমন প্রাইভেট নেটওয়ার্ক বা অন্য কারণে)
                     console.error('API Error:', data.message);
                     ipAddressEl.textContent = 'ত্রুটি';
-                    ispNameEl.textContent = 'ISP তথ্য লোড করা যায়নি। (API ত্রুটি)';
+                    ispNameEl.textContent = 'ISP খুঁজে পাওয়া যায়নি';
+                    ispNameEl.style.color = "red";
                     locationEl.textContent = 'ত্রুটি';
-                    resultDiv.innerHTML += '<p style="color:red; margin-top: 10px;">API থেকে তথ্য পেতে ব্যর্থ।</p>';
                 }
 
             } catch (error) {
-                // নেটওয়ার্ক বা অন্যান্য ত্রুটি ঘটলে
+                // নেটওয়ার্ক ত্রুটি ঘটলে
                 console.error('Fetch Error:', error);
                 
-                // লোডিং বার্তা সরিয়ে দিন
-                if (initialLoadingMessage) initialLoadingMessage.style.display = 'none';
+                if (loadingMsg) loadingMsg.style.display = 'none';
                 
-                ipAddressEl.textContent = 'ত্রুটি';
-                ispNameEl.textContent = 'নেটওয়ার্ক ত্রুটি বা ব্লক করা হয়েছে।';
-                locationEl.textContent = 'ত্রুটি';
-                resultDiv.innerHTML += '<p style="color:red; margin-top: 10px;">নেটওয়ার্ক সংযোগ বা প্রোটোকল সমস্যার কারণে তথ্য লোড হয়নি।</p>';
+                ipAddressEl.textContent = 'নেটওয়ার্ক সমস্যা';
+                ispNameEl.textContent = 'তথ্য লোড করা যায়নি (Adblocker বা DNS সমস্যা হতে পারে)';
+                ispNameEl.style.color = "red";
+                locationEl.textContent = '--';
             }
         }
     </script>
